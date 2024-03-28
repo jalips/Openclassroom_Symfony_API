@@ -50,6 +50,10 @@ class BookRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('b')
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit);
+
+        $query = $qb->getQuery();
+        $query->setFetchMode(Book::class, "author", \Doctrine\ORM\Mapping\ClassMetadata::FETCH_EAGER); // Autre solution pour désactiver le lazy loading
+
         return $qb->getQuery()->getResult();
     }
 }
