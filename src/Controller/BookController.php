@@ -20,11 +20,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class BookController extends AbstractController
 {
     #[Route('/api/books', name: 'books', methods: ['GET'])]
-    public function getAllBooks(BookRepository $bookRepository, SerializerInterface $serializer): JsonResponse
+    public function getAllBooks(BookRepository $bookRepository, SerializerInterface $serializer, Request $request): JsonResponse
     {
-        $bookList = $bookRepository->findAll();
+        $page = $request->get('page', 1);
+        $limit = $request->get('limit', 3);
+        $bookList = $bookRepository->findAllWithPagination($page, $limit);
 
         $jsonBookList = $serializer->serialize($bookList, 'json', ['groups' => 'getBooks']);
+            
         return new JsonResponse($jsonBookList, Response::HTTP_OK, [], true);
     }
 
