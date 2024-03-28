@@ -7,8 +7,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
+use ApiPlatform\Metadata\ApiResource;
 
 #[ORM\Entity(repositoryClass: AuthorRepository::class)]
+#[ApiResource()]
 class Author
 {
     #[ORM\Id]

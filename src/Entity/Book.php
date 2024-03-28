@@ -9,6 +9,7 @@ use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Hateoas\Configuration\Annotation as Hateoas;
 use JMS\Serializer\Annotation\Since;
+use ApiPlatform\Metadata\ApiResource;
 
 /**
  * @Hateoas\Relation(
@@ -40,6 +41,7 @@ use JMS\Serializer\Annotation\Since;
  *
  */
 #[ORM\Entity(repositoryClass: BookRepository::class)]
+#[ApiResource()]
 class Book
 {
     #[ORM\Id]
