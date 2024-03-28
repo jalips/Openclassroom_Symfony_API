@@ -3,18 +3,19 @@
 namespace App\Controller;
 
 use App\Entity\Book;
+use JMS\Serializer\Serializer;
 use App\Repository\BookRepository;
+use App\Service\VersioningService;
 use App\Repository\AuthorRepository;
+use JMS\Serializer\SerializerInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use JMS\Serializer\SerializationContext;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
-use JMS\Serializer\Serializer;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\SerializerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -43,14 +44,15 @@ class BookController extends AbstractController
         return new JsonResponse($jsonBookList, Response::HTTP_OK, [], true);
    }
 
-   #[Route('/api/books/{id}', name: 'detailBook', methods: ['GET'])]
-   public function getDetailBook(Book $book, SerializerInterface $serializer): JsonResponse 
-   {
-       $context = SerializationContext::create()->setGroups(['getBooks']);
-       $context->setVersion("1.0");
-       $jsonBook = $serializer->serialize($book, 'json', $context);
-       return new JsonResponse($jsonBook, Response::HTTP_OK, [], true);
-   }
+    #[Route('/api/books/{id}', name: 'detailBook', methods: ['GET'])]
+    public function getDetailBook(Book $book, SerializerInterface $serializer, VersioningService $versioningService): JsonResponse 
+    {
+        $version = $versioningService->getVersion();
+        $context = SerializationContext::create()->setGroups(["getBooks"]);
+        $context->setVersion($version);
+        $jsonBook = $serializer->serialize($book, 'json', $context);
+        return new JsonResponse($jsonBook, Response::HTTP_OK, [], true);
+    }
 
     #[Route('/api/books/{id}', name: 'deleteBook', methods: ['DELETE'])]
     public function deleteBook(Book $book, EntityManagerInterface $em, TagAwareCacheInterface $cachePool): JsonResponse 
